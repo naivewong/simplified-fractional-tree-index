@@ -49,6 +49,24 @@ func (l *Level) Search(key int) *Node {
 	}
 }
 
+func (l *Level) RangeSearch(key1, key2 int) []*Node {
+	i := sort.Search(len(l.nodes), func (j int) bool {
+		return l.nodes[j].Key() >= key1
+	})
+	if i == len(l.nodes) {
+		return nil
+	} else {
+		j := sort.Search(len(l.nodes) - i, func (j int) bool {
+			return l.nodes[i+j].Key() >= key2
+		})
+		if j == 0 {
+			return nil
+		} else {
+			return l.nodes[i:i+j]
+		}
+	}
+}
+
 func (l *Level) Len() int { return len(l.nodes) }
 
 func (l *Level) Empty() bool { return len(l.nodes) == 0 }

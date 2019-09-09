@@ -32,6 +32,54 @@ func (tree *Tree) Search(key int) *Node {
 	return nil
 }
 
+func (tree *Tree) RangeSearch(key1, key2 int) []*Node {
+	var temp [][]*Node
+	var count int
+	for i, l := range tree.levels {
+		if l.Empty() {
+			continue
+		}
+		r := l.RangeSearch(key1, key2)
+		if r != nil {
+			temp = append(temp, r)
+			count += len(r)
+		}
+		r = tree.bufs[i].RangeSearch(key1, key2)
+		if r != nil {
+			temp = append(temp, r)
+			count += len(r)
+		}
+	}
+	if count == 0 {
+		return nil
+	} else {
+		return mergeNodes(temp, count)
+	}
+}
+
+func mergeNodes(temp [][]*Node, count int) []*Node {
+	merge := make([]*Node, 0, count)
+	var mNode *Node
+	var mIdx  int
+	for len(temp) > 0 {
+		mNode = temp[0][0]
+		mIdx = 0
+		for i, level := range temp[1:] {
+			if level[0].Key() < mNode.Key() {
+				mNode = level[0]
+				mIdx = i+1
+			}
+		}
+		merge = append(merge, mNode)
+		temp[mIdx] = temp[mIdx][1:]
+		if len(temp[mIdx]) == 0 {
+			temp[mIdx], temp[len(temp)-1] = temp[len(temp)-1], temp[mIdx]
+			temp = temp[:len(temp)-1]
+		}
+	}
+	return merge
+}
+
 func (tree *Tree) Insert(key int, value string) {
 	node := tree.Search(key)
 	if node != nil {

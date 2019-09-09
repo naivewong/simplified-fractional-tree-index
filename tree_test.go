@@ -86,4 +86,13 @@ func TestTree(t *testing.T) {
 		Assert(t, node != nil, "node is nil " + strconv.Itoa(tuple.key))
 		Equals(t, node.Value(), tuple.val)
 	}
+
+	temp := tree.RangeSearch(1000, 20000)
+	Equals(t, len(temp), 19000)
+	k := 1000
+	for _, node := range temp {
+		Equals(t, k, node.Key())
+		Equals(t, strconv.Itoa(k), node.Value())
+		k++
+	}
 }
